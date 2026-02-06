@@ -2,8 +2,8 @@
 
 # analyzing nginx log file
 
-# --------------- top file IP addresses with most requests ---------------
-echo -e "\e[1;34m----- Top 5 IP Addresses with the most requests -----\e[0m"
+# ----- Top 5 IP Addresses with the most requests -----
+echo -e "\n\e[1;34m----- Top 5 IP Addresses with the most requests -----\e[0m"
 awk '
 { 
     # counting all ips and their total count in nginx.log file & storing this data to all_ip_array
@@ -13,9 +13,21 @@ awk '
 END { 
     # printing ip: totalCount
     for (ip in all_ip_array) {
-        print ip ": " all_ip_array[ip]
+        print ip, "-", all_ip_array[ip], "requests"
     }
 }
-# sort: -k 2 (sort by the 2nd column which is our ip count); -n (in math numerical form); -r (in descending order)
+# sort: -k 2 (sort by the 3rd column OF THE PRINT IN AWK which is our ip count); -n (in math numerical form); -r (in descending order)
 # this works too: PROCINFO["sorted_in"] = "@val_num_desc" (insert in end, before for loop)
-' nginx.log | sort -k 2 -nr | head -n 5
+' nginx.log | sort -k 3 -nr | head -n 5
+
+# ----- Top 5 most requested paths -----
+echo -e "\n\e[1;34m----- Top 5 most requested paths -----\e[0m"
+awk '
+    # api paths are in column 7 (remember columns are separated by white spaces)
+    {api_paths_arr[$7]++}
+    END {
+        for (path in api_paths_arr) {
+            print path, "-", api_paths_arr[path], "requests"
+        }
+    }
+' nginx.log | sort -k 3 -nr | head -n 5
