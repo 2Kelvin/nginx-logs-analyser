@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# analyzing nginx log file
+
+# top file IP addresses with most requests
+awk '
+{print $1}
+' test.log | column -t
