@@ -35,16 +35,33 @@ awk '
 
 
 # ----- Top 5 response status codes -----
+# sort -t '-': says that '-' is just a separator so sort with the rightful column 2
 echo -e "\n\e[1;34m----- Top 5 response status codes -----\e[0m"
 awk '
     # status codes are in column 9
-    # Regular expression to only process lines where column 9 is exactly a 3-digit number
-    $9 ~ /^[0-9]{3}$/ {
-        status_codes_arr[$9]++
-    }
+    # Regular expression to only process lines where column 9 is exactly a 3-digit number --> $9 ~ /^[0-9]{3}$/
+    {status_codes_arr[$9]++}
     END {
         for (code in status_codes_arr) {
             print code, "-", status_codes_arr[code], "requests"
         }
     }
-' nginx.log | sort -k 3 -nr | head -n 5
+' nginx.log | sort -t '-' -k 2 -nr | head -n 5
+
+# ----- Top 5 user agents -----
+echo -e "\n\e[1;34m----- Top 5 user agents -----\e[0m"
+# -F \" --> split nginx line by double quotes instead of default spaces: \ is an escape character: prevents error of shell expecting closing brackets since it was expecting a string
+# NF is Number of Fields == Number of Columns
+# last field is usually a newline hence NF-1 to get the last text in the line
+# this code automatically strips the "" around user_agent columns we are fetching
+# $0 means the whole line
+# sort -t '-': says that '-' is just a separator so sort with the rightful column 2
+awk -F\" '
+    {
+        # $(NF-1) is every user_agent string in each line in nginx.log file
+        user_agents_arr[$(NF-1)]++
+    }
+    END { for (agent in user_agents_arr) {
+        print agent, "-", user_agents_arr[agent], "requests"
+    } }
+' nginx.log | sort -t '-' -k 2 -nr | head -n 5
