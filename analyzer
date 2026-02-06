@@ -20,6 +20,7 @@ END {
 # this works too: PROCINFO["sorted_in"] = "@val_num_desc" (insert in end, before for loop)
 ' nginx.log | sort -k 3 -nr | head -n 5
 
+
 # ----- Top 5 most requested paths -----
 echo -e "\n\e[1;34m----- Top 5 most requested paths -----\e[0m"
 awk '
@@ -28,6 +29,22 @@ awk '
     END {
         for (path in api_paths_arr) {
             print path, "-", api_paths_arr[path], "requests"
+        }
+    }
+' nginx.log | sort -k 3 -nr | head -n 5
+
+
+# ----- Top 5 response status codes -----
+echo -e "\n\e[1;34m----- Top 5 response status codes -----\e[0m"
+awk '
+    # status codes are in column 9
+    # Regular expression to only process lines where column 9 is exactly a 3-digit number
+    $9 ~ /^[0-9]{3}$/ {
+        status_codes_arr[$9]++
+    }
+    END {
+        for (code in status_codes_arr) {
+            print code, "-", status_codes_arr[code], "requests"
         }
     }
 ' nginx.log | sort -k 3 -nr | head -n 5
