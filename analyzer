@@ -2,7 +2,20 @@
 
 # analyzing nginx log file
 
-# top file IP addresses with most requests
+# --------------- top file IP addresses with most requests ---------------
+echo -e "\e[1;34m----- Top 5 IP Addresses with the most requests -----\e[0m"
 awk '
-{print $1}
-' test.log | column -t
+{ 
+    # counting all ips and their total count in nginx.log file & storing this data to all_ip_array
+    # $1: is the first column in each line in nginx.log file, which has the IP Addresses
+    all_ip_array[$1]++
+}
+END { 
+    # printing ip: totalCount
+    for (ip in all_ip_array) {
+        print ip ": " all_ip_array[ip]
+    }
+}
+# sort: -k 2 (sort by the 2nd column which is our ip count); -n (in math numerical form); -r (in descending order)
+# this works too: PROCINFO["sorted_in"] = "@val_num_desc" (insert in end, before for loop)
+' nginx.log | sort -k 2 -nr | head -n 5
