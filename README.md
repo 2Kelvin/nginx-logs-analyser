@@ -48,3 +48,4 @@ The script leverages `awk`'s associative arrays to count occurrences efficiently
 
 ## 📄 Example Output
 
+<img width="1879" height="869" alt="Screenshot 2026-02-06 193324" src="https://github.com/user-attachments/assets/474fa88c-70d2-4d47-9f12-ba51d0f091cd" />
